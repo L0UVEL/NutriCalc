@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Delete {{ ingredient.name }}{% endblock %}
+
+{% block content %}
+<div class="confirm-delete-container">
+  <div class="delete-card">
+    <div class="delete-icon">🗑️</div>
+    <h2>Delete Ingredient?</h2>
+    <p>Are you sure you want to delete <strong>{{ ingredient.name }}</strong>?</p>
+    <p class="warning-text">This action cannot be undone. Any recipes in the Cookbook that use this ingredient will show it as "not found" during calculation.</p>
+    <div class="delete-actions">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Yes, Delete It</button>
+      </form>
+      <a href="{% url 'ingredient_detail' ingredient.pk %}" class="btn-ghost">Cancel</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

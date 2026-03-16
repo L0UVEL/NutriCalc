@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}{{ recipe.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'recipe_list' %}" class="breadcrumb">← Back to Cookbook</a>
+    <h1>{{ recipe.name }}</h1>
+    <p class="subtitle">{{ recipe.servings }} serving{{ recipe.servings|pluralize }} &middot; {{ ingredients.count }} ingredient{{ ingredients.count|pluralize }}</p>
+  </div>
+  <div class="action-group">
+    <a href="{% url 'recipe_update' recipe.pk %}" class="btn-primary">Edit</a>
+    <a href="{% url 'recipe_delete' recipe.pk %}" class="btn-danger">Delete</a>
+  </div>
+</div>
+
+{% if api_error %}
+<div class="api-error-banner">
+  <strong>Connection Error:</strong> {{ api_error }}
+</div>
+{% endif %}
+
+<div class="detail-layout">
+
+  <!-- Left: Recipe info + Ingredients -->
+  <div class="detail-left">
+    {% if recipe.description %}
+    <div class="section-card">
+      <h2>About This Recipe</h2>
+      <p>{{ recipe.description }}</p>
+    </div>
+    {% endif %}
+
+    <div class="section-card">
+      <h2>Ingredients</h2>
+      <div class="ingredients-list">
+        {% for ri in ingredients %}
+        <div class="ingredient-row">
+          <span class="ing-name">{{ ri.ingredient_name }}</span>
+          <span class="ing-qty">{{ ri.quantity_g }}g</span>
+          {% if nutrition %}
+            {% for b in nutrition.breakdown %}
+              {% if b.name == ri.ingredient_name %}
+                <span class="ing-cal">{{ b.calories }} kcal</span>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% empty %}
+        <p class="empty-text">No ingredients added yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if recipe.instructions %}
+    <div class="section-card">
+      <h2>Instructions</h2>
+      <div class="instructions-text">{{ recipe.instructions|linebreaks }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right: Nutrition panel + AI Guide -->
+  <div class="detail-right">
+
+    {% if nutrition %}
+    <!-- Nutrition Summary -->
+    <div class="section-card nutrition-card">
+      <h2>Nutrition Summary <small>total recipe</small></h2>
+      <div class="calorie-hero">
+        <span class="cal-number">{{ nutrition.total.calories|floatformat:0 }}</span>
+        <span class="cal-label">kcal total</span>
+      </div>
+      <div class="macro-grid">
+        <div class="macro-box protein-box">
+          <div class="macro-val">{{ nutrition.total.protein_g }}g</div>
+          <div class="macro-lbl">Protein</div>
+        </div>
+        <div class="macro-box carb-box">
+          <div class="macro-val">{{ nutrition.total.carbs_g }}g</div>
+          <div class="macro-lbl">Carbs</div>
+        </div>
+        <div class="macro-box fat-box">
+          <div class="macro-val">{{ nutrition.total.fat_g }}g</div>
+          <div class="macro-lbl">Fat</div>
+        </div>
+        <div class="macro-box fiber-box">
+          <div class="macro-val">{{ nutrition.total.fiber_g }}g</div>
+          <div class="macro-lbl">Fiber</div>
+        </div>
+      </div>
+      <div class="extra-nutrients">
+        <span>Sugar: <strong>{{ nutrition.total.sugar_g }}g</strong></span>
+        <span>Sodium: <strong>{{ nutrition.total.sodium_mg }}mg</strong></span>
+      </div>
+
+      {% if recipe.servings > 1 %}
+      <div class="per-serving">
+        <strong>Per Serving (÷{{ recipe.servings }}):</strong>
+        {% with cal_ps=nutrition.total.calories|floatformat:0 %}
+        ~{{ nutrition.total.calories|floatformat:0 }} kcal total
+        {% endwith %}
+      </div>
+      {% endif %}
+
+      {% if nutrition.not_found %}
+      <div class="not-found-warning">
+        <strong>Ingredients not found in DB:</strong>
+        {% for n in nutrition.not_found %}<span class="not-found-tag">{{ n }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- AI Guide -->
+    {% if ai_guide %}
+    <div class="section-card ai-card">
+      <h2>🤖 AI Nutrition Guide</h2>
+
+      <!-- Health Score -->
+      <div class="health-score-wrap">
+        <div class="health-score score-{{ ai_guide.score.label|lower }}">
+          <span class="score-num">{{ ai_guide.score.value }}</span>
+          <span class="score-max">/100</span>
+        </div>
+        <div class="score-label-text">
+          <strong>{{ ai_guide.score.label }}</strong>
+          <span>Health Score</span>
+        </div>
+      </div>
+
+      {% if ai_guide.tips %}
+      <div class="ai-section">
+        <h4>Tips</h4>
+        {% for tip in ai_guide.tips %}
+        <div class="ai-tip ai-tip-good">{{ tip }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if ai_guide.warnings %}
+      <div class="ai-section">
+        <h4>Warnings</h4>
+        {% for w in ai_guide.warnings %}
+        <div class="ai-tip ai-tip-warn">{{ w }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if ai_guide.suggestions %}
+      <div class="ai-section">
+        <h4>Suggestions</h4>
+        {% for s in ai_guide.suggestions %}
+        <div class="ai-tip ai-tip-info">{{ s }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="section-card">
+      <p class="empty-text">Add ingredients to see the nutrition panel.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
