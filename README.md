@@ -1,105 +1,65 @@
 # NutriCalc — Recipe Nutritional Calculator
 
-Two connected Django web apps: **App A (Ingredient DB)** and **App B (Cookbook)**. App B calls App A's REST API to calculate full nutrition for any saved recipe.
+A unified Django web application that allows users to manage a comprehensive ingredient database and create recipes with real-time nutritional calculations and an AI-powered Health Score. It handles CRUD operations for both ingredients and recipes, and features live ingredient autocomplete.
 
 ---
 
-## Setup (already done — just run the servers)
+## Setup (already done — just run the server)
 
 A shared `venv/` is located in the root `WEB APP KAY SIR RM/` folder.
 
-### Start App A — Ingredient DB (port 8000)
+### Start the Application
 ```powershell
-cd ingredient_db
-..\venv\Scripts\python manage.py runserver 8000
+cd nutri_calc
+..\venv\Scripts\python manage.py runserver
 ```
 Open → **http://localhost:8000**
 
-### Start App B — Cookbook (port 8001)
-Open a **second terminal**, then:
-```powershell
-cd cookbook
-..\venv\Scripts\python manage.py runserver 8001
-```
-Open → **http://localhost:8001**
-
-> ⚠️ App A **must be running** for nutrition calculations and ingredient autocomplete to work in App B.
-
 ---
 
-## API Endpoints (App A)
+## Admin Panel
 
-| Method | URL | Description |
-|--------|-----|-------------|
-| GET | `/api/ingredients/?q=chicken` | Search ingredients for autocomplete |
-| POST | `/api/calculate/` | Calculate nutrition from ingredient list |
+Create a superuser to access the Django admin panel:
 
-**POST `/api/calculate/` body:**
-```json
-{
-  "ingredients": [
-    {"name": "Chicken Breast (cooked)", "quantity_g": 150},
-    {"name": "Broccoli", "quantity_g": 80}
-  ]
-}
-```
-
----
-
-## Admin Panels
-
-Create superuser for each app separately:
-
-**App A admin:**
 ```powershell
-cd ingredient_db
+cd nutri_calc
 ..\venv\Scripts\python manage.py createsuperuser
 ```
 → http://localhost:8000/admin/
-
-**App B admin:**
-```powershell
-cd cookbook
-..\venv\Scripts\python manage.py createsuperuser
-```
-→ http://localhost:8001/admin/
 
 ---
 
 ## Project Structure
 
-```
+```text
 WEB APP KAY SIR RM/
 ├── venv/                  ← Shared virtual environment
-├── ingredient_db/         ← App A (port 8000)
-│   ├── ingredients/       ← Django app with Ingredient model + REST API
-│   │   ├── models.py
-│   │   ├── views.py       (CRUD + /api/calculate/ + /api/ingredients/)
-│   │   ├── forms.py
-│   │   ├── urls.py
-│   │   ├── admin.py
-│   │   └── management/commands/seed_ingredients.py
-│   ├── templates/
-│   └── static/css/style_a.css
-│
-└── cookbook/              ← App B (port 8001)
-    ├── recipes/            ← Django app with Recipe + RecipeIngredient models
+├── README.md              ← Project documentation
+├── requirements.txt       ← Python dependencies
+└── nutri_calc/            ← Main Django Project
+    ├── db.sqlite3         ← Unified SQLite database
+    ├── manage.py          
+    ├── nutri_calc/        ← Project settings and main urls
+    ├── ingredients/       ← App for Ingredient models, views, and APIs
     │   ├── models.py
-    │   ├── views.py        (CRUD + AI Guide + calls App A API)
-    │   ├── forms.py
-    │   └── urls.py
-    ├── templates/
-    └── static/css/style_b.css
+    │   ├── views.py       (CRUD + /api/calculate/ + /api/ingredients/)
+    │   └── ...
+    ├── recipes/           ← App for Recipe models and views
+    │   ├── models.py
+    │   ├── views.py       (CRUD + AI guide)
+    │   └── ...
+    ├── templates/         ← Global and app-specific templates
+    └── static/            ← Static CSS and JS assets
 ```
 
 ---
 
 ## Features
 
-- **App A**: Browse, search, add, edit, delete ingredients with full macronutrient data (calories, protein, carbs, fat, fiber, sugar, sodium). 66 ingredients pre-seeded.
-- **App B**: Create, view, edit, delete recipes. On the recipe detail page, nutrition is fetched live from App A and displayed. The **AI Nutrition Guide** provides:
+- **Ingredient DB (`ingredients` app)**: Browse, search, add, edit, delete ingredients with full macronutrient data (calories, protein, carbs, fat, fiber, sugar, sodium). Dozens of ingredients are pre-seeded.
+- **Cookbook (`recipes` app)**: Create, view, edit, delete recipes. On the recipe detail page, nutrition is calculated directly from the database and displayed. The **AI Nutrition Guide** provides:
   - 🏥 Health Score (0–100)
   - Tips for balanced macros
   - Warnings for high sodium/fat/calories
   - Suggestions for ingredient substitutions
-- **Autocomplete**: When adding ingredients to a recipe, a live dropdown suggests names from the Ingredient DB.
+- **Autocomplete**: When adding ingredients to a recipe, a live dropdown fetches and suggests names from the unified Ingredient DB.
