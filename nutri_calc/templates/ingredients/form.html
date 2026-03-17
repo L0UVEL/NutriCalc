@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/style_a.css' %}">{% endblock %}
+{% block nav_db_active %}active{% endblock %}
+{% block title %}{{ action }} Ingredient{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'ingredient_list' %}" class="breadcrumb">&#8592; Back to Ingredients</a>
+    <h1>{{ action }} Ingredient</h1>
+  </div>
+</div>
+
+<div class="form-container">
+  <form method="post" class="ingredient-form">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label>Ingredient Name *</label>
+        {{ form.name }}
+        {% if form.name.errors %}<span class="form-error">{{ form.name.errors.0 }}</span>{% endif %}
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        {{ form.category }}
+      </div>
+      <div class="form-group">
+        <label>&#128293; {{ form.calories_per_100g.label }}</label>
+        {{ form.calories_per_100g }}
+        {% if form.calories_per_100g.errors %}<span class="form-error">{{ form.calories_per_100g.errors.0 }}</span>{% endif %}
+      </div>
+      <div class="form-group">
+        <label>&#128170; {{ form.protein_g.label }}</label>
+        {{ form.protein_g }}
+      </div>
+      <div class="form-group">
+        <label>&#127806; {{ form.carbs_g.label }}</label>
+        {{ form.carbs_g }}
+      </div>
+      <div class="form-group">
+        <label>&#129361; {{ form.fat_g.label }}</label>
+        {{ form.fat_g }}
+      </div>
+      <div class="form-group">
+        <label>&#129382; {{ form.fiber_g.label }}</label>
+        {{ form.fiber_g }}
+      </div>
+      <div class="form-group">
+        <label>&#127852; {{ form.sugar_g.label }}</label>
+        {{ form.sugar_g }}
+      </div>
+      <div class="form-group">
+        <label>&#129474; {{ form.sodium_mg.label }}</label>
+        {{ form.sodium_mg }}
+      </div>
+      <div class="form-group full-width">
+        <label>&#128221; Notes (optional)</label>
+        {{ form.description }}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">Save Ingredient</button>
+      <a href="{% url 'ingredient_list' %}" class="btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

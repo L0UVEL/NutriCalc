@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/style_b.css' %}">{% endblock %}
+{% block nav_cb_active %}active{% endblock %}
+{% block title %}{{ action }} Recipe{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'recipe_list' %}" class="breadcrumb">&#8592; Back to Cookbook</a>
+    <h1>{{ action }} Recipe</h1>
+  </div>
+</div>
+
+<div class="form-container">
+  <form method="post" id="recipe-form">
+    {% csrf_token %}
+
+    <div class="form-section-card">
+      <h3>Recipe Details</h3>
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Recipe Name *</label>
+          {{ form.name }}
+          {% if form.name.errors %}<span class="form-error">{{ form.name.errors.0 }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+          <label>Servings</label>
+          {{ form.servings }}
+        </div>
+        <div class="form-group full-width">
+          <label>Description (optional)</label>
+          {{ form.description }}
+        </div>
+        <div class="form-group full-width">
+          <label>Instructions (optional)</label>
+          {{ form.instructions }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section-card" id="ingredients-section">
+      <h3>Ingredients <small>&#8212; type to search from Ingredient DB</small></h3>
+      {{ formset.management_form }}
+      <div id="formset-container">
+        {% for ing_form in formset %}
+        {% if ing_form.instance.pk %}
+        <div class="ingredient-row-form existing">
+        {% else %}
+        <div class="ingredient-row-form">
+        {% endif %}
+          <div class="ing-input-wrap">
+            {{ ing_form.ingredient_name }}
+            <div class="autocomplete-dropdown" style="display:none;"></div>
+          </div>
+          <div class="qty-input-wrap">
+            {{ ing_form.quantity_g }}
+            <span class="unit-label">g</span>
+          </div>
+          {% if ing_form.instance.pk %}
+          <label class="delete-check">{{ ing_form.DELETE }} Remove</label>
+          {% else %}
+          <button type="button" class="remove-row-btn" onclick="this.closest('.ingredient-row-form').remove()">&#10005;</button>
+          {% endif %}
+          {% for hidden in ing_form.hidden_fields %}{{ hidden }}{% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" id="add-ingredient-btn" class="btn-add-row">+ Add Another Ingredient</button>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">Save Recipe</button>
+      <a href="{% url 'recipe_list' %}" class="btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<!-- Django data for JS (avoids linter errors) -->
+<script id="ing-suggestions" type="application/json">{{ ingredient_suggestions|safe }}</script>
+<script id="form-count" type="application/json">{{ formset.total_form_count }}</script>
+
+<script>
+const suggestions = JSON.parse(document.getElementById('ing-suggestions').textContent);
+let formCount = JSON.parse(document.getElementById('form-count').textContent);
+
+function setupAutocomplete(input) {
+  const dropdown = input.parentElement.querySelector('.autocomplete-dropdown');
+  input.addEventListener('input', function () {
+    const val = this.value.toLowerCase();
+    if (!val) { dropdown.style.display = 'none'; return; }
+    const hits = suggestions.filter(s => s.toLowerCase().includes(val)).slice(0, 8);
+    if (!hits.length) { dropdown.style.display = 'none'; return; }
+    dropdown.innerHTML = hits.map(h => `<div class="ac-item" data-val="${h}">${h}</div>`).join('');
+    dropdown.style.display = 'block';
+    dropdown.querySelectorAll('.ac-item').forEach(item => {
+      item.addEventListener('click', () => { input.value = item.dataset.val; dropdown.style.display = 'none'; });
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!input.parentElement.contains(e.target)) dropdown.style.display = 'none';
+  });
+}
+
+document.querySelectorAll('.ing-name-input').forEach(setupAutocomplete);
+
+document.getElementById('add-ingredient-btn').addEventListener('click', () => {
+  const container = document.getElementById('formset-container');
+  const totalForms = document.getElementById('id_recipe_ingredients-TOTAL_FORMS');
+  const idx = formCount;
+  const row = document.createElement('div');
+  row.className = 'ingredient-row-form';
+  row.innerHTML = `
+    <div class="ing-input-wrap">
+      <input type="text" name="recipe_ingredients-${idx}-ingredient_name"
+             class="form-input ing-name-input" placeholder="e.g. Chicken Breast (cooked)" autocomplete="off" />
+      <div class="autocomplete-dropdown" style="display:none;"></div>
+    </div>
+    <div class="qty-input-wrap">
+      <input type="number" name="recipe_ingredients-${idx}-quantity_g"
+             class="form-input" placeholder="grams" min="0.1" step="0.1" />
+      <span class="unit-label">g</span>
+    </div>
+    <button type="button" class="remove-row-btn" onclick="this.closest('.ingredient-row-form').remove()">&#10005;</button>
+    <input type="hidden" name="recipe_ingredients-${idx}-id" />
+    <input type="hidden" name="recipe_ingredients-${idx}-recipe" />
+  `;
+  container.appendChild(row);
+  setupAutocomplete(row.querySelector('.ing-name-input'));
+  formCount++;
+  totalForms.value = formCount;
+});
+</script>
+{% endblock %}

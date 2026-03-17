@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/style_a.css' %}">{% endblock %}
+{% block nav_db_active %}active{% endblock %}
+{% block title %}{{ ingredient.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'ingredient_list' %}" class="breadcrumb">&#8592; Back to Ingredients</a>
+    <h1>{{ ingredient.name }}</h1>
+    <span class="category-badge-lg">{{ ingredient.get_category_display }}</span>
+  </div>
+  <div class="action-group">
+    <a href="{% url 'ingredient_update' ingredient.pk %}" class="btn-primary">Edit</a>
+    <a href="{% url 'ingredient_delete' ingredient.pk %}" class="btn-danger">Delete</a>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="detail-main">
+    <div class="section-card">
+      <h2>&#128202; Nutritional Values <small>per 100g</small></h2>
+      <div class="nutrient-grid">
+        <div class="nutrient-item calories">
+          <div class="nutrient-value">{{ ingredient.calories_per_100g }}</div>
+          <div class="nutrient-label">Calories (kcal)</div>
+        </div>
+        <div class="nutrient-item protein">
+          <div class="nutrient-value">{{ ingredient.protein_g }}g</div>
+          <div class="nutrient-label">Protein</div>
+        </div>
+        <div class="nutrient-item carb">
+          <div class="nutrient-value">{{ ingredient.carbs_g }}g</div>
+          <div class="nutrient-label">Carbohydrates</div>
+        </div>
+        <div class="nutrient-item fat">
+          <div class="nutrient-value">{{ ingredient.fat_g }}g</div>
+          <div class="nutrient-label">Fat</div>
+        </div>
+        <div class="nutrient-item fiber">
+          <div class="nutrient-value">{{ ingredient.fiber_g }}g</div>
+          <div class="nutrient-label">Fiber</div>
+        </div>
+        <div class="nutrient-item sugar">
+          <div class="nutrient-value">{{ ingredient.sugar_g }}g</div>
+          <div class="nutrient-label">Sugar</div>
+        </div>
+        <div class="nutrient-item sodium">
+          <div class="nutrient-value">{{ ingredient.sodium_mg }}mg</div>
+          <div class="nutrient-label">Sodium</div>
+        </div>
+      </div>
+    </div>
+    {% if ingredient.description %}
+    <div class="section-card">
+      <h2>&#128221; Notes</h2>
+      <p>{{ ingredient.description }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="detail-sidebar">
+    <div class="section-card">
+      <h2>&#128200; Macro Breakdown</h2>
+      <div class="macro-bars">
+        <div class="bar-item">
+          <span>Protein</span>
+          <div class="bar-track"><div class="bar-fill protein-bar" data-value="{{ ingredient.protein_g }}"></div></div>
+          <span>{{ ingredient.protein_g }}g</span>
+        </div>
+        <div class="bar-item">
+          <span>Carbs</span>
+          <div class="bar-track"><div class="bar-fill carb-bar" data-value="{{ ingredient.carbs_g }}"></div></div>
+          <span>{{ ingredient.carbs_g }}g</span>
+        </div>
+        <div class="bar-item">
+          <span>Fat</span>
+          <div class="bar-track"><div class="bar-fill fat-bar" data-value="{{ ingredient.fat_g }}"></div></div>
+          <span>{{ ingredient.fat_g }}g</span>
+        </div>
+        <div class="bar-item">
+          <span>Fiber</span>
+          <div class="bar-track"><div class="bar-fill fiber-bar" data-value="{{ ingredient.fiber_g }}"></div></div>
+          <span>{{ ingredient.fiber_g }}g</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-card info-card">
+      <p>Added: {{ ingredient.created_at|date:"M j, Y" }}</p>
+      <p>Updated: {{ ingredient.updated_at|date:"M j, Y" }}</p>
+    </div>
+  </div>
+</div>
+<script>
+  document.querySelectorAll('.bar-fill[data-value]').forEach(function(bar) {
+    bar.style.width = Math.min(parseFloat(bar.getAttribute('data-value')) || 0, 100) + '%';
+  });
+</script>
+{% endblock %}

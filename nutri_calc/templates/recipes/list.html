@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/style_b.css' %}">{% endblock %}
+{% block nav_cb_active %}active{% endblock %}
+{% block title %}My Recipes{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>&#128214; My Cookbook</h1>
+    <p class="subtitle">{{ total }} recipe{{ total|pluralize }} saved &mdash; powered by real nutrition data</p>
+  </div>
+  <a href="{% url 'recipe_create' %}" class="btn-primary">+ New Recipe</a>
+</div>
+
+<div class="search-bar">
+  <form method="get" class="search-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="&#128269; Search recipes..." class="search-input" />
+    <button type="submit" class="btn-primary">Search</button>
+    {% if query %}<a href="{% url 'recipe_list' %}" class="btn-ghost">Clear</a>{% endif %}
+  </form>
+</div>
+
+{% if recipes %}
+<div class="recipe-grid">
+  {% for recipe in recipes %}
+  <div class="recipe-card">
+    <div class="recipe-card-top">
+      <h3 class="recipe-name">{{ recipe.name }}</h3>
+      <span class="servings-badge">{{ recipe.servings }} serving{{ recipe.servings|pluralize }}</span>
+    </div>
+    {% if recipe.description %}
+      <p class="recipe-desc">{{ recipe.description|truncatewords:15 }}</p>
+    {% endif %}
+    <div class="recipe-meta">
+      <span>&#129367; {{ recipe.recipe_ingredients.count }} ingredient{{ recipe.recipe_ingredients.count|pluralize }}</span>
+      <span>{{ recipe.created_at|date:"M j, Y" }}</span>
+    </div>
+    <div class="card-actions">
+      <a href="{% url 'recipe_detail' recipe.pk %}" class="btn-primary btn-sm-full">View &amp; Nutrition</a>
+      <a href="{% url 'recipe_update' recipe.pk %}" class="btn-edit-sm">Edit</a>
+      <a href="{% url 'recipe_delete' recipe.pk %}" class="btn-delete-sm">Delete</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">&#127859;</div>
+  <h3>{% if query %}No recipes found{% else %}No recipes yet{% endif %}</h3>
+  <p>{% if query %}Try a different search.{% else %}Build your personalized cookbook with live nutrition tracking!{% endif %}</p>
+  <a href="{% url 'recipe_create' %}" class="btn-primary">+ Create Your First Recipe</a>
+</div>
+{% endif %}
+{% endblock %}

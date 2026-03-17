@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/style_b.css' %}">{% endblock %}
+{% block nav_cb_active %}active{% endblock %}
+{% block title %}Delete {{ recipe.name }}{% endblock %}
+
+{% block content %}
+<div class="confirm-delete-container">
+  <div class="delete-card">
+    <div class="delete-icon">&#128465;&#65039;</div>
+    <h2>Delete Recipe?</h2>
+    <p>Are you sure you want to delete <strong>{{ recipe.name }}</strong>?</p>
+    <p class="warning-text">This will permanently delete the recipe and all its ingredients. This cannot be undone.</p>
+    <div class="delete-actions">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Yes, Delete It</button>
+      </form>
+      <a href="{% url 'recipe_detail' recipe.pk %}" class="btn-ghost">Cancel</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
