@@ -4,10 +4,6 @@ A unified Django web application that allows users to manage a comprehensive ing
 
 ---
 
-## Setup (already done — just run the server)
-
-A shared `venv/` is located in the root `WEB APP KAY SIR RM/` folder.
-
 ### Start the Application
 ```powershell
 cd nutri_calc
@@ -56,7 +52,7 @@ WEB APP KAY SIR RM/
 
 ## Features
 
-- **Ingredient DB (`ingredients` app)**: Browse, search, add, edit, delete ingredients with full macronutrient data (calories, protein, carbs, fat, fiber, sugar, sodium). Dozens of ingredients are pre-seeded.
+- **Ingredient (`ingredients` app)**: Browse, search, add, edit, delete ingredients with full macronutrient data (calories, protein, carbs, fat, fiber, sugar, sodium). Dozens of ingredients are pre-seeded.
 - **Cookbook (`recipes` app)**: Create, view, edit, delete recipes. On the recipe detail page, nutrition is calculated directly from the database and displayed. The **AI Nutrition Guide** provides:
   - 🏥 Health Score (0–100)
   - Tips for balanced macros
