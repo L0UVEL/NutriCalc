@@ -56,19 +56,19 @@ Since you are on the free tier, you can easiest create it from the Bash console:
    cd ~/WEB-APP-KAY-SIR-RM/nutri_calc
    python manage.py shell
    ```
-3. Copy and paste the following into the shell:
+3. Copy and paste the following into the shell (make sure there are no leading spaces on the first line):
    ```python
-   from django.contrib.auth.models import User
-   if not User.objects.filter(username='sirrm').exists():
-       User.objects.create_superuser('sirrm', 'rommelmanuquil.rm@gmail.com', 'P@ssword123')
-       print("Superuser 'sirrm' created!")
-   else:
-       u = User.objects.get(username='sirrm')
-       u.set_password('P@ssword123')
-       u.save()
-       print("Password updated for 'sirrm'!")
-   exit()
+from django.contrib.auth.models import User
+if not User.objects.filter(username='sirrm').exists():
+    User.objects.create_superuser('sirrm', 'rommelmanuquil.rm@gmail.com', 'P@ssword123')
+    print("Superuser 'sirrm' created!")
+else:
+    u = User.objects.get(username='sirrm')
+    u.set_password('P@ssword123')
+    u.save()
+    print("Password updated for 'sirrm'!")
+exit()
    ```
 
-> [!NOTE]
-> Keep your `settings.py` files secure and don't share your database if it contains sensitive data.
+> [!TIP]
+> If you get an `IndentationError`, it's usually because some extra spaces were included at the beginning of the lines when pasting. Try copying the code again, or type the lines one by one.
