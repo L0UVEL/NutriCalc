@@ -70,13 +70,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'mongodb': {
-        'ENGINE': 'django_mongodb_backend',
-        'HOST': 'mongodb+srv://louvel:%40LouvelRouz15@nutricalc.0xus7pc.mongodb.net/',
-        'NAME': 'nutricalc_db',
-    }
+    # --- MONGODB CONFIGURATION (Commented out to use SQLite) ---
+    # 'mongodb': {
+    #     'ENGINE': 'django_mongodb_backend',
+    #     'HOST': 'mongodb+srv://louvel:%40LouvelRouz15@nutricalc.0xus7pc.mongodb.net/',
+    #     'NAME': 'nutricalc_db',
+    # }
 }
-DATABASE_ROUTERS = ['nutri_calc.routers.MongoRouter']
+# DATABASE_ROUTERS = ['nutri_calc.routers.MongoRouter']
 
 # ── Password Validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
