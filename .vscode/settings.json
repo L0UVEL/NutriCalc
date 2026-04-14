@@ -1,0 +1,9 @@
+{
+    "python.analysis.extraPaths": [
+        "./nutri_calc"
+    ],
+    "python.autoComplete.extraPaths": [
+        "./nutri_calc"
+    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe"
+}

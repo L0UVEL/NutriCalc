@@ -67,8 +67,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'mongodb': {
+        'ENGINE': 'django_mongodb_backend',
+        'HOST': 'mongodb+srv://louvel:%40LouvelRouz15@nutricalc.0xus7pc.mongodb.net/',
+        'NAME': 'nutricalc_db',
     }
 }
+DATABASE_ROUTERS = ['nutri_calc.routers.MongoRouter']
 
 # ── Password Validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
@@ -96,5 +102,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
